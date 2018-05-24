@@ -22,11 +22,6 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * The Channels.
-     */
-    private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-
-    /**
      * Channel active.
      *
      * @param ctx the ctx
@@ -34,7 +29,7 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        channels.add(ctx.channel());
+        logger.info("Active");
     }
 
     /**
@@ -46,12 +41,9 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ByteBuf byteBuf = (ByteBuf) msg;
-        logger.debug("message : {} ",byteBuf.toString(Charset.defaultCharset()));
-        //TODO data upate
-        ByteBuf result = ctx.alloc().buffer();
-        result.writeBytes("12|lenycer|data\n".getBytes());
-        channels.writeAndFlush(result).addListener(future -> {
+        String message = (String) msg;
+        logger.debug("message : {} ",message);
+        ctx.channel().writeAndFlush("A|TEST|11").addListener(future -> {
             if(future.isSuccess()) {
                 logger.info("success");
             } else {
